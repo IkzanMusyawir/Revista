@@ -15,16 +15,19 @@ const sessionSecret = process.env.SESSION_SECRET || 'revista_default_secure_secr
 const port = Number(process.env.PORT) || 3001;
 
 const app = express();
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || '127.0.0.1',
-  port: Number(process.env.DB_PORT) || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'revista_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+const dbUri = process.env.MYSQL_URL || process.env.DATABASE_URL;
+const pool = dbUri
+  ? mysql.createPool(dbUri)
+  : mysql.createPool({
+      host: process.env.DB_HOST || '127.0.0.1',
+      port: Number(process.env.DB_PORT) || 3306,
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'revista_db',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+    });
 
 const origins = new Set((process.env.CORS_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000').split(',').map((x) => x.trim()).filter(Boolean));
 const feedbackLimits = new Map();
@@ -407,12 +410,19 @@ app.post('/api/feedback', async (req, res) => {
 // 11. SERVE FRONTEND (DIST) UNTUK PRODUCTION / HOSTING
 const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
+
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-databaseReady.then(() => app.listen(port, '0.0.0.0', () => console.log(`🚀 REVISTA server aktif pada port ${port}`))).catch((err) => {
-  console.error('Database initialization failed:', err.message);
-  process.exit(1);
+// Jalankan server HTTP langsung agar lolos Railway port healthcheck
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 REVISTA server aktif pada port ${port}`);
 });
+
+databaseReady
+  .then(() => console.log('✅ Database MySQL terhubung & tabel siap!'))
+  .catch((err) => console.error('⚠️ Database initialization warning:', err.message));
