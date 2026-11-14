@@ -413,9 +413,12 @@ app.use(express.static(distPath));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(distPath, 'index.html'));
+// SPA fallback kompatibel Express 5 (menggantikan wildcard app.get('*') yang deprecated)
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    return res.sendFile(path.join(distPath, 'index.html'));
+  }
+  next();
 });
 
 // Jalankan server HTTP langsung agar lolos Railway port healthcheck
