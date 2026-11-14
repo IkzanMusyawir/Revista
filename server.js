@@ -379,8 +379,11 @@ app.post('/api/feedback', async (req, res) => {
   try {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const now = Date.now();
-    const recent = (feedbackLimits.get(ip) || []).filter((time) => now - time < 60000);
-    if (recent.length >= 10 || (recent.length && now - recent[recent.length - 1] < 2500)) return res.status(429).json({ error: 'Mohon tunggu sebelum mengirim ulasan lagi.' });
+    // Proteksi anti-spam: jeda minimal 30 detik & maksimal 3 ulasan per 10 menit per IP
+    const recent = (feedbackLimits.get(ip) || []).filter((time) => now - time < 600000);
+    if (recent.length >= 3 || (recent.length && now - recent[recent.length - 1] < 30000)) {
+      return res.status(429).json({ error: 'Ulasan Anda baru saja diterima. Mohon tunggu sebelum mengirim ulasan baru.' });
+    }
     recent.push(now); feedbackLimits.set(ip, recent);
 
     const { store_id, rating, comment, photos } = req.body;

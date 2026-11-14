@@ -5,7 +5,6 @@ import {
   ShieldCheck, 
   Send, 
   CheckCircle2, 
-  RotateCcw,
   MapPin,
   Camera,
   X,
@@ -40,6 +39,18 @@ function compressImage(file) {
 }
 
 export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }) {
+  const storageKey = `revista_reviewed_${currentStore?.id || 'default'}`;
+  const [alreadyReviewed, setAlreadyReviewed] = useState(() => {
+    try {
+      const last = localStorage.getItem(storageKey);
+      if (!last) return false;
+      // Batasi 1 ulasan per 2 jam per perangkat untuk mencegah spam
+      return Date.now() - Number(last) < 2 * 60 * 60 * 1000;
+    } catch {
+      return false;
+    }
+  });
+
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -104,20 +115,15 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
       }
       setResultData(data.feedback);
       setSubmitted(true);
+      try {
+        localStorage.setItem(storageKey, String(Date.now()));
+      } catch {}
       onFeedbackSubmitted?.();
     } catch (err) {
       setSubmitError(err.message || 'Server tidak dapat dihubungi. Ulasan belum tersimpan.');
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleReset = () => {
-    setSubmitted(false);
-    setRating(5);
-    setComment('');
-    setPhotos([]);
-    setResultData(null);
   };
 
   return (
@@ -145,7 +151,21 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
 
         {/* Form / Thank You */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
-          {!submitted ? (
+          {alreadyReviewed && !submitted ? (
+            /* Sudah Pernah Mengirim Ulasan (Anti-Spam) */
+            <div className="text-center py-6 space-y-3 animate-in fade-in">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 mx-auto flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Ulasan Sudah Terkirim</h3>
+              <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+                Anda sudah mengirimkan ulasan untuk kunjungan ini. Terima kasih banyak atas partisipasi Anda dalam membantu kami meningkatkan kualitas pelayanan!
+              </p>
+              <div className="pt-2 text-[10px] text-slate-400">
+                Sistem REVISTA membatasi 1 ulasan per kunjungan meja.
+              </div>
+            </div>
+          ) : !submitted ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Preset Cepat */}
               <div>
@@ -332,14 +352,10 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
                 </div>
               )}
 
-              <button
-                type="button"
-                onClick={handleReset}
-                className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors min-h-[44px]"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Kirim Ulasan Lain</span>
-              </button>
+              <div className="pt-2 text-center">
+                <p className="text-xs font-semibold text-slate-700">Terima kasih atas partisipasi Anda!</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Ulasan telah diverifikasi dan masuk ke sistem pemilik usaha.</p>
+              </div>
             </div>
           )}
         </div>
