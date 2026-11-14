@@ -61,23 +61,58 @@ const createToken = (claims) => {
 };
 
 async function initializeDatabase() {
-  await pool.query('SELECT 1');
-  for (const [table, column, definition] of [
-    ['stores', 'password_hash', 'VARCHAR(255) NULL'],
-    ['stores', 'salt', 'VARCHAR(64) NULL'],
-    ['stores', 'role', "ENUM('admin','owner') DEFAULT 'owner'"],
-    ['stores', 'session_version', 'INT NOT NULL DEFAULT 1'],
-    ['stores', 'phone', 'VARCHAR(30) NULL'],
-    ['stores', 'table_count', 'INT DEFAULT 0'],
-    ['stores', 'wifi_name', 'VARCHAR(50) NULL'],
-    ['feedbacks', 'photos', 'MEDIUMTEXT NULL'],
-    ['feedbacks', 'ip_hash', 'VARCHAR(64) NULL'],
-  ]) {
-    const [columns] = await pool.query(`SHOW COLUMNS FROM \`${table}\` LIKE ?`, [column]);
-    if (!columns.length) await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+  // Tunggu database MySQL online (retry hingga 10 kali saat container baru menyala)
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    try {
+      await pool.query('SELECT 1');
+      break;
+    } catch (err) {
+      if (attempt === 10) throw err;
+      console.log(`Menunggu database siap... (${attempt}/10)`);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
   }
 
-  // Buat otomatis akun master admin jika belum ada
+  // 1. Buat tabel stores otomatis jika belum ada di database online
+  await pool.query(`CREATE TABLE IF NOT EXISTS \`stores\` (
+    \`id\` VARCHAR(50) PRIMARY KEY,
+    \`name\` VARCHAR(100) NOT NULL,
+    \`category\` VARCHAR(50) NOT NULL,
+    \`owner\` VARCHAR(100) NOT NULL,
+    \`owner_email\` VARCHAR(100) NOT NULL UNIQUE,
+    \`password_hash\` VARCHAR(255) NOT NULL,
+    \`salt\` VARCHAR(64) NOT NULL,
+    \`address\` VARCHAR(255) NULL,
+    \`phone\` VARCHAR(30) NULL,
+    \`table_count\` INT NOT NULL DEFAULT 0,
+    \`wifi_name\` VARCHAR(50) NULL,
+    \`trend\` VARCHAR(20) DEFAULT '0%',
+    \`role\` ENUM('admin', 'owner') DEFAULT 'owner',
+    \`session_version\` INT NOT NULL DEFAULT 1,
+    \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX \`idx_owner_email\` (\`owner_email\`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
+  // 2. Buat tabel feedbacks otomatis jika belum ada di database online
+  await pool.query(`CREATE TABLE IF NOT EXISTS \`feedbacks\` (
+    \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+    \`anon_id\` VARCHAR(20) NOT NULL,
+    \`store_id\` VARCHAR(50) NOT NULL,
+    \`rating\` INT NOT NULL CHECK (\`rating\` BETWEEN 1 AND 5),
+    \`comment\` TEXT NOT NULL,
+    \`sentiment\` ENUM('Positif', 'Netral', 'Negatif') NOT NULL,
+    \`confidence\` INT DEFAULT 90,
+    \`highlight\` TINYINT(1) DEFAULT 0,
+    \`photos\` MEDIUMTEXT NULL,
+    \`ip_hash\` VARCHAR(64) NULL,
+    \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX \`idx_store_created\` (\`store_id\`, \`created_at\`),
+    INDEX \`idx_sentiment\` (\`sentiment\`),
+    FOREIGN KEY (\`store_id\`) REFERENCES \`stores\`(\`id\`) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
+  // 3. Buat otomatis akun master admin jika belum ada
   const [[{ count }]] = await pool.query('SELECT COUNT(*) AS count FROM `stores` WHERE `role` = "admin"');
   if (Number(count) === 0) {
     const salt = '746c168f61ddf06293ae697aa1dcfcde';
