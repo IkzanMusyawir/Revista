@@ -8,6 +8,7 @@ import QrCardView from './components/QrCardView';
 import SettingsView from './components/SettingsView';
 import AdminStoresView from './components/AdminStoresView';
 import MobileCustomerView from './components/MobileCustomerView';
+import LoginView from './components/LoginView';
 import { API_BASE } from './api';
 import { X } from 'lucide-react';
 
