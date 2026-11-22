@@ -38,7 +38,7 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
   next();
 });
 
@@ -147,7 +147,7 @@ async function requireAuth(req, res, next) {
 }
 
 // ================= MULTINOMIAL NAIVE BAYES SENTIMENT CLASSIFIER =================
-// Model dilatih dari 5.400 ulasan dataset PRDECT-ID + Korpus Pelayanan UMKM Indonesia
+// Model dilatih dari korpus UMKM + Mendeley rk8pjbghct.2 + SEACrowd/id_abusive (lihat metadata model)
 const modelPath = path.join(__dirname, 'src/data/sentimentModel.json');
 const nbModel = JSON.parse(fs.readFileSync(modelPath, 'utf8'));
 
