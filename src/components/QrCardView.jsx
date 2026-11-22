@@ -85,7 +85,7 @@ export default function QrCardView({ currentStore }) {
         <div id="printable-standee" className="w-full max-w-[340px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-center">
           <div className="bg-slate-900 text-white px-6 py-5">
             <div className="flex items-center justify-center gap-2 mb-1">
-              <img src="/logo.svg" alt="Logo REVISTA" className="w-7 h-7 rounded-md" />
+              <img src="/logo.jpeg" alt="Logo REVISTA" className="w-7 h-7 rounded-md" />
               <span className="font-extrabold text-sm tracking-tight">REVISTA</span>
             </div>
             <p className="text-[10px] text-blue-300">Sistem Evaluasi Pelayanan Pelanggan</p>

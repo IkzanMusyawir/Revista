@@ -49,7 +49,7 @@ export default function Sidebar({
           {/* Brand Header */}
           <div className="p-5 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="Logo REVISTA" className="w-9 h-9" />
+              <img src="/logo.jpeg" alt="Logo REVISTA" className="w-9 h-9 rounded-lg" />
               <span className="font-extrabold text-base text-slate-900 dark:text-white tracking-tight">
                 REVISTA
               </span>
