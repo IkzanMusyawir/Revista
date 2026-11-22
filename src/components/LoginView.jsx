@@ -35,7 +35,7 @@ export default function LoginView({ onLoginSuccess }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
       <div className="flex items-center gap-3 mb-6">
-        <img src="/logo.jpeg" alt="Logo REVISTA" className="w-11 h-11 rounded-xl" />
+        <img src="/logo.png" alt="Logo REVISTA" className="w-11 h-11 rounded-xl" />
         <div>
           <span className="font-extrabold text-xl text-slate-900 tracking-tight block">REVISTA</span>
           <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Customer Evaluation Platform</span>
