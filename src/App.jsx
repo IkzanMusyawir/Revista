@@ -14,7 +14,7 @@ import { X } from 'lucide-react';
 
 export default function App() {
   const [stores, setStores] = useState([]);
-  const [publicStore, setPublicStore] = useState(null);
+  const [publicStore, setPublicStore] = useState(undefined);
   const [authChecking, setAuthChecking] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('30d');
@@ -109,6 +109,9 @@ export default function App() {
   const currentStore = stores[0] || session?.store;
 
   if (isMobileReviewMode) {
+    if (publicStore === undefined && storeIdParam) {
+      return <main className="min-h-screen grid place-items-center"><div className="w-7 h-7 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" /></main>;
+    }
     return publicStore
       ? <MobileCustomerView currentStore={publicStore} onFeedbackSubmitted={() => {}} />
       : <main className="min-h-screen grid place-items-center p-6 text-center text-slate-600">Toko tidak ditemukan atau tautan QR tidak valid.</main>;

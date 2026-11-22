@@ -132,6 +132,7 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
       <div className="max-w-md w-full mx-auto space-y-4">
         {/* Header */}
         <div className="text-center pt-3">
+          <img src="/logo.svg" alt="Logo REVISTA" className="w-12 h-12 mx-auto" />
           <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
             REVISTA • Feedback Pelanggan
           </span>

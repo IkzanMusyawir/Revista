@@ -7,7 +7,6 @@ import {
   Settings, 
   Building2,
   LogOut, 
-  Sparkles, 
   X 
 } from 'lucide-react';
 
@@ -50,9 +49,7 @@ export default function Sidebar({
           {/* Brand Header */}
           <div className="p-5 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-slate-900 dark:bg-blue-600 flex items-center justify-center text-white shadow-xs">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
+              <img src="/logo.svg" alt="Logo REVISTA" className="w-9 h-9" />
               <span className="font-extrabold text-base text-slate-900 dark:text-white tracking-tight">
                 REVISTA
               </span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { API_BASE } from '../api';
-import { Sparkles, Lock, Mail, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function LoginView({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
@@ -35,9 +35,7 @@ export default function LoginView({ onLoginSuccess }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-          <Sparkles className="w-5 h-5" />
-        </div>
+        <img src="/logo.svg" alt="Logo REVISTA" className="w-11 h-11" />
         <div>
           <span className="font-extrabold text-xl text-slate-900 tracking-tight block">REVISTA</span>
           <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Customer Evaluation Platform</span>
