@@ -7,8 +7,7 @@ import {
   CheckCircle2, 
   MapPin,
   Camera,
-  X,
-  ImagePlus
+  X
 } from 'lucide-react';
 
 // Compress gambar ke max 800px dan kualitas 0.7 — native canvas, nol library tambahan
@@ -59,7 +58,6 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [resultData, setResultData] = useState(null);
-  const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
   const starLabels = { 1: 'Sangat Buruk', 2: 'Kurang Puas', 3: 'Cukup', 4: 'Puas', 5: 'Sangat Puas' };
@@ -234,48 +232,10 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
 
               {/* Upload Foto Bukti */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                    <Camera className="w-3.5 h-3.5 text-slate-500" />
-                    Foto Bukti <span className="font-normal text-slate-400">(opsional, maks. 3 foto)</span>
-                  </label>
-                  {photos.length < 3 && (
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => cameraInputRef.current?.click()}
-                        className="flex items-center gap-1 text-[11px] font-semibold text-white px-2 py-1 rounded-lg bg-blue-600 border border-blue-700 transition-colors min-h-[32px]"
-                      >
-                        <Camera className="w-3.5 h-3.5" />
-                        Ambil Foto
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 px-2 py-1 rounded-lg bg-blue-50 border border-blue-200 transition-colors min-h-[32px]"
-                      >
-                        <ImagePlus className="w-3.5 h-3.5" />
-                        Galeri
-                      </button>
-                    </div>
-                  )}
-                  <input
-                    ref={cameraInputRef}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={handlePhotoAdd}
-                  />
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={handlePhotoAdd}
-                  />
-                </div>
+                <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                  <Camera className="w-3.5 h-3.5 text-slate-500" />
+                  Foto Bukti <span className="font-normal text-slate-400">(opsional, maks. 3 foto)</span>
+                </label>
 
                 {photos.length > 0 && (
                   <div className="flex gap-2 flex-wrap">
@@ -298,25 +258,24 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
                   </div>
                 )}
 
-                {photos.length === 0 && (
-                  <div className="w-full border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center gap-2 p-3 bg-slate-50/50">
-                    <button
-                      type="button"
-                      onClick={() => cameraInputRef.current?.click()}
-                      className="w-full h-11 rounded-lg bg-blue-600 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-blue-700 min-h-[44px]"
-                    >
-                      <Camera className="w-4 h-4" />
-                      Ambil Foto dengan Kamera
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-[11px] text-blue-600 hover:text-blue-700 font-medium"
-                    >
-                      atau pilih dari galeri
-                    </button>
-                  </div>
+                {photos.length < 3 && (
+                  <button
+                    type="button"
+                    onClick={() => cameraInputRef.current?.click()}
+                    className="w-full h-11 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-blue-100 min-h-[44px]"
+                  >
+                    <Camera className="w-4 h-4" />
+                    Ambil Foto
+                  </button>
                 )}
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handlePhotoAdd}
+                />
               </div>
 
               {submitError && (
