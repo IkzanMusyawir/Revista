@@ -7,7 +7,8 @@ import {
   CheckCircle2, 
   MapPin,
   Camera,
-  X
+  X,
+  ImagePlus
 } from 'lucide-react';
 
 // Compress gambar ke max 800px dan kualitas 0.7 — native canvas, nol library tambahan
@@ -59,6 +60,7 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
   const [submitError, setSubmitError] = useState('');
   const [resultData, setResultData] = useState(null);
   const cameraInputRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const starLabels = { 1: 'Sangat Buruk', 2: 'Kurang Puas', 3: 'Cukup', 4: 'Puas', 5: 'Sangat Puas' };
 
@@ -259,20 +261,38 @@ export default function MobileCustomerView({ currentStore, onFeedbackSubmitted }
                 )}
 
                 {photos.length < 3 && (
-                  <button
-                    type="button"
-                    onClick={() => cameraInputRef.current?.click()}
-                    className="w-full h-11 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-blue-100 min-h-[44px]"
-                  >
-                    <Camera className="w-4 h-4" />
-                    Ambil Foto
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="flex-1 h-11 rounded-xl bg-blue-600 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-blue-700 min-h-[44px]"
+                    >
+                      <Camera className="w-4 h-4" />
+                      Ambil Foto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex-1 h-11 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-blue-100 min-h-[44px]"
+                    >
+                      <ImagePlus className="w-4 h-4" />
+                      Dari Galeri
+                    </button>
+                  </div>
                 )}
                 <input
                   ref={cameraInputRef}
                   type="file"
                   accept="image/*"
                   capture="environment"
+                  className="hidden"
+                  onChange={handlePhotoAdd}
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
                   className="hidden"
                   onChange={handlePhotoAdd}
                 />
